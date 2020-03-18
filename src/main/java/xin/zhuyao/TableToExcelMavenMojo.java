@@ -46,13 +46,21 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @Mojo(name = "tableToExcelMaven")
 public class TableToExcelMavenMojo extends AbstractMojo {
 
-
+    /**
+     * 扫描包
+     */
     @Parameter(property = "scanPackage",defaultValue = "")
     private String scanPackage;
 
+    /**
+     * 项目源码包路径
+     */
     @Parameter(defaultValue = "${project.compileClasspathElements}", readonly = true)
     private String[] compileClasspathElements;
 
+    /**
+     * 项目的artifactId
+     */
     @Parameter(defaultValue = "${project.artifactId}", readonly = true)
     private String artifactId;
 
@@ -117,7 +125,7 @@ public class TableToExcelMavenMojo extends AbstractMojo {
                             }else {
                                 list1.add(apply(declaredField.getName()));
                             }
-                            if ((declaredField.getAnnotation(FieldName.class) != null)&& isNotEmpty(declaredField.getAnnotation(FieldName.class).name())){
+                            if ((declaredField.getAnnotation(FieldName.class) != null)&& isNotEmpty(declaredField.getAnnotation(FieldName.class).message())){
                                 list2.add(declaredField.getAnnotation(FieldName.class).message());
                             } else {
                                 list2.add("未写注释");
@@ -137,7 +145,7 @@ public class TableToExcelMavenMojo extends AbstractMojo {
 
                 new ExcelWriterBuilder().excelType(ExcelTypeEnum.XLSX)
                         .file(out)
-                        .sheet(1,"配置结果").table(1)
+                        .sheet(1,"表").table(1)
                         .doWrite(objectList);
                 out.close();
 
@@ -178,6 +186,11 @@ public class TableToExcelMavenMojo extends AbstractMojo {
         return className;
     }
 
+    /**
+     * jpa源码中的实体类如何转成数据库字段
+     * @param name
+     * @return
+     */
     private static String apply(String name) {
         if (name == null) {
             return null;
@@ -189,7 +202,6 @@ public class TableToExcelMavenMojo extends AbstractMojo {
                     builder.insert(i++, '_');
                 }
             }
-
             return builder.toString().toLowerCase();
         }
     }
